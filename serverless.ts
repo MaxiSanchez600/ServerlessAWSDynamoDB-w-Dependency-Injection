@@ -1,8 +1,8 @@
 import type { AWS } from "@serverless/typescript";
 
-import hello from "src/application/handlers/addTask";
+import addTask from "src/application/handlers/addTask";
 
-import getMax from "src/application/handlers/getTasks";
+import getTasks from "src/application/handlers/getTasks";
 
 const serverlessConfiguration: AWS = {
   service: "serverless-ts-dynamodb",
@@ -42,7 +42,7 @@ const serverlessConfiguration: AWS = {
     },
   },
   // import the function via paths
-  functions: { hello, getMax },
+  functions: { addTask, getTasks },
   package: { individually: true },
   custom: {
     esbuild: {
