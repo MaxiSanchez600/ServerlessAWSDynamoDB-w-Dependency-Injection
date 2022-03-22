@@ -1,7 +1,4 @@
-export default {
-  type: "object",
-  properties: {
-    name: { type: "string" },
-  },
-  required: ["name"],
-} as const;
+export interface addTaskDTO {
+  title: string;
+  description: string;
+}

@@ -21,4 +21,24 @@ export default class tasksRepository {
       throw e;
     }
   }
+
+  async addTask(newTask: Task): Promise<Task> {
+    try {
+      const result = await this.docClient
+        .put({
+          TableName: "TaskTable",
+          Item: newTask,
+        })
+        .promise();
+
+      if (result.$response.httpResponse.statusCode !== 200) {
+        // Handle DynamoDB / AWS errors that dont throw errors
+        throw new Error(JSON.stringify(result.$response.httpResponse));
+      } else {
+        return newTask;
+      }
+    } catch (e) {
+      throw e;
+    }
+  }
 }

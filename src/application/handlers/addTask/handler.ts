@@ -1,20 +1,35 @@
-import type { ValidatedEventAPIGatewayProxyEvent } from "@libs/api-gateway";
 import { middyfy } from "@libs/lambda";
 import { Errors } from "src/application/enums/errors";
 import { Messages } from "src/application/enums/messages";
-import { Responses } from "src/application/helpers/apiResponses";
-import schema from "../../dtos/addTask";
+import { handleError, Responses } from "src/application/helpers/apiResponses";
+import { addTaskValidator } from "src/application/helpers/validations/addTaskValidator";
+import tasksServiceInterface from "src/domain/interfaces/tasksService.interface";
 
-const addTask: ValidatedEventAPIGatewayProxyEvent<typeof schema> = async (
-  event
-) => {
-  if (!event.body.name) {
+let tasksService: tasksServiceInterface;
+
+export const setTasksService = (service: tasksServiceInterface) => {
+  tasksService = service;
+};
+
+const addTask = async (event) => {
+  // Check for Injected Service dependency
+  if (!tasksService) {
+    return Responses._500({ data: {}, message: Errors.DEP_FAILED });
+  }
+
+  // Validate body request
+  const newTask = addTaskValidator(event.body);
+  if (!newTask) {
     return Responses._400({ data: {}, message: Errors.INVALID_REQUEST });
   }
-  return Responses._200({
-    data: { name: event.body.name },
-    message: Messages.ADD_TASK,
-  });
+
+  // Create new task from TasksService
+  try {
+    const createdTask = await tasksService.addTask(newTask);
+    return Responses._200({ data: createdTask, message: Messages.ADD_TASK });
+  } catch (e) {
+    return handleError(e);
+  }
 };
 
 export const addTaskHandler = middyfy(addTask);
