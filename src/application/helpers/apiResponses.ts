@@ -14,24 +14,27 @@ export const Responses = {
       body: JSON.stringify(data),
     };
   },
-  _200(data: Data) {
+  _200(data: Data): serverlessResponse {
     return this._defineResponse(200, data);
   },
-  _400(data: Data) {
+  _400(data: Data): serverlessResponse {
     return this._defineResponse(400, data);
   },
-  _403(data: Data) {
-    return this._defineResponse(400, data);
+  _401(data: Data): serverlessResponse {
+    return this._defineResponse(401, data);
   },
-  _500(data: Data) {
+  _403(data: Data): serverlessResponse {
+    return this._defineResponse(403, data);
+  },
+  _500(data: Data): serverlessResponse {
     return this._defineResponse(500, data);
   },
-  _Custom(data: Data, statusCode: number) {
+  _Custom(data: Data, statusCode: number): serverlessResponse {
     return this._defineResponse(statusCode, data);
   },
 };
 
-export const handleError = (e: any) => {
+export const handleError = (e: any): serverlessResponse => {
   if (e.statusCode) {
     // Handling errors from database / AWS that mostly come with statusCode and a message
     return Responses._Custom(
